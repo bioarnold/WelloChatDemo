@@ -52,6 +52,13 @@ app.use(
 
 app.use('/', routes);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log('Server listening on port 8000!');
 });
+
+const stop = () => {
+    server.close();
+};
+
+module.exports = app;
+module.exports.stop = stop;
