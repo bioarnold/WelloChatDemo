@@ -33,6 +33,7 @@ app.get('/swagger.json', function (req, res) {
     res.send(swaggerSpec);
 });
 
+let generatedHtml;
 app.use(
     '/swagger',
     (req, res, next) => {
