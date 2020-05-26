@@ -30,7 +30,7 @@ const userService = require('./../services/userService');
  */
 async function getUsers(req, res, next) {
     userService
-        .getAll()
+        .getAll(!!req.user)
         .then((users) => res.json(users))
         .catch((err) => next(err));
 }

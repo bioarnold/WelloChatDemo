@@ -1,17 +1,19 @@
-function transform(user) {
+function transform(user, showProtected) {
     if (!user) return user;
 
     if (Array.isArray(user)) {
         throw new Error('Please call transformList for arrays');
     }
 
-    return {
+    const result = {
         userName: user.userName,
-        email: user.email,
+        profileImage: user.profileImage,
     };
+
+    return { ...result, ...(showProtected ? { email: user.email } : {}) };
 }
 
-function transformList(users) {
+function transformList(users, showProtected) {
     if (!users) return [];
 
     if (!Array.isArray(users)) {
@@ -20,7 +22,7 @@ function transformList(users) {
 
     const list = [];
     users.forEach((user) => {
-        list.push(transform(user));
+        list.push(transform(user, showProtected));
     });
 
     return list;

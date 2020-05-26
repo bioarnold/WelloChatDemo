@@ -1,4 +1,5 @@
 const userRepository = require('./../dataAccess/userRepository');
+const transformer = require('./../transformers/userTransformer');
 
 async function authenticate({ userName, password }) {
     const user = await userRepository.getForAuth(userName, password);
@@ -7,8 +8,8 @@ async function authenticate({ userName, password }) {
     }
 }
 
-async function getAll() {
-    return userRepository.getUsers();
+async function getAll(showProtected) {
+    return transformer.transformList(await userRepository.getUsers(), showProtected);
 }
 
 module.exports = {
