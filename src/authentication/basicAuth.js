@@ -1,11 +1,6 @@
 const userService = require('./../services/userService');
 
 async function basicAuth(req, res, next) {
-    // make authenticate path public
-    if (req.path === '/users/authenticate') {
-        return next();
-    }
-
     // check for basic auth header
     if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
         res.statusCode = 401;
