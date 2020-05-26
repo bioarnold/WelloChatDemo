@@ -10,8 +10,12 @@ const insertTestData = async () => {
 
 insertTestData();
 
-const getUsers = async () => {
+async function getUsers() {
     return transformer.transformList(await db.asyncFind({}, [['sort', { userName: 1 }]]));
-};
+}
 
-module.exports = { getUsers };
+async function getForAuth(userName, password) {
+    return db.asyncFindOne({ userName: userName, password: password });
+}
+
+module.exports = { getUsers, getForAuth };

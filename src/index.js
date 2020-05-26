@@ -3,8 +3,12 @@ const app = express();
 const routes = require('./routes');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+var basicAuth = require('./authentication/basicAuth');
 
 const port = 8000;
+
+// setting up authenticationn
+app.use(basicAuth);
 
 // swagger definition
 var swaggerDefinition = {

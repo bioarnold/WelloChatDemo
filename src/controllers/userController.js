@@ -1,4 +1,4 @@
-const userRepository = require('./../dataAccess/userRepository');
+const userService = require('./../services/userService');
 
 /**
  * @swagger
@@ -10,6 +10,28 @@ const userRepository = require('./../dataAccess/userRepository');
  *       email:
  *         type: string
  */
+
+/**
+* @swagger
+* /users/authenticate:
+*   get:
+*     tags:
+*       - Users
+*     description: Authenticates the user
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: A user object
+*         schema:
+            "$ref": '#/definitions/User'
+*/
+function authenticate(req, res, next) {
+    userService
+        .authenticate(req.body)
+        .then((user) => (user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect' })))
+        .catch((err) => next(err));
+}
 
 /**
  * @swagger
@@ -28,10 +50,12 @@ const userRepository = require('./../dataAccess/userRepository');
  *           items:
  *             "$ref": '#/definitions/User'
  */
-exports.getUsers = async function (req, res) {
+async function getUsers(req, res) {
     try {
-        res.send(await userRepository.getUsers());
+        res.send(await userService.getAll());
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-};
+}
+
+module.exports = { getUsers, authenticate };

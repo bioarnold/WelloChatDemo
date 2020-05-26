@@ -1,4 +1,17 @@
-const transformList = (users) => {
+function transform(user) {
+    if (!user) return user;
+
+    if (Array.isArray(user)) {
+        throw new Error('Please call transformList for arrays');
+    }
+
+    return {
+        userName: user.userName,
+        email: user.email,
+    };
+}
+
+function transformList(users) {
     if (!users) return [];
 
     if (!Array.isArray(users)) {
@@ -7,13 +20,10 @@ const transformList = (users) => {
 
     const list = [];
     users.forEach((user) => {
-        list.push({
-            userName: user.userName,
-            email: user.email,
-        });
+        list.push(transform(user));
     });
 
     return list;
-};
+}
 
-module.exports = { transformList };
+module.exports = { transform, transformList };

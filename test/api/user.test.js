@@ -13,6 +13,7 @@ describe('Get user list', () => {
     it('should return all users', (done) => {
         chai.request(server)
             .get('/users')
+            .auth('admin', 'admin')
             .end((err, res) => {
                 res.should.have.status(200);
 
