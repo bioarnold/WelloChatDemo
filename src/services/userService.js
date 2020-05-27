@@ -12,7 +12,14 @@ async function getAll(showProtected) {
     return transformer.transformList(await userRepository.getUsers(), showProtected);
 }
 
+function addUser(user) {
+    if (!user) return;
+
+    return userRepository.addUser(user);
+}
+
 module.exports = {
     authenticate,
     getAll,
+    addUser,
 };

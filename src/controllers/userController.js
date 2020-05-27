@@ -9,6 +9,8 @@ const userService = require('./../services/userService');
  *         type: string
  *       email:
  *         type: string
+ *       profileImag:
+ *         type: string;
  */
 
 /**
@@ -35,4 +37,54 @@ async function getUsers(req, res, next) {
         .catch((err) => next(err));
 }
 
-module.exports = { getUsers };
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     tags:
+ *       - Users
+ *     description: Creates user
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: The created user object
+ *         schema:
+ *             "$ref": '#/definitions/User'
+ *       403:
+ *         description: FORBIDDEN if the user is not an admin
+ */
+async function addUser(req, res, next) {
+    if (!req.user.isAdmin) {
+        res.status(403);
+        return res.json({ error: 'Forbidden' });
+    }
+
+    if (!validateCreateRequest(req)) {
+        res.status(400);
+        return res.json({ error: 'Invalid request' });
+    }
+
+    userService
+        .addUser(req.body)
+        .then((user) => res.json(user))
+        .catch((err) => next(err));
+}
+
+function validateCreateRequest(req) {
+    console.log(req);
+
+    if (!req || !req.body) {
+        return false;
+    }
+
+    const expectedProps = ['userName', 'password', 'email', 'isAdmin', 'profileImage'];
+
+    for (const prop of expectedProps) {
+        if (!prop in req.body) return false;
+    }
+
+    return true;
+}
+
+module.exports = { getUsers, addUser };

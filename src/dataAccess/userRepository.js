@@ -17,4 +17,13 @@ function getForAuth(userName, password) {
     return db.asyncFindOne({ userName: userName, password: password });
 }
 
-module.exports = { getUsers, getForAuth };
+async function addUser(user) {
+    if (!user) {
+        return;
+    }
+
+    await db.asyncInsert(user);
+    return user;
+}
+
+module.exports = { getUsers, getForAuth, addUser };

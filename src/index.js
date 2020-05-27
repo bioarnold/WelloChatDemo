@@ -3,9 +3,13 @@ const app = express();
 const routes = require('./routes');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-var basicAuth = require('./authentication/basicAuth');
+const basicAuth = require('./authentication/basicAuth');
+const bodyParser = require('body-parser');
 
 const port = 8000;
+
+// setting up json parsing
+app.use(bodyParser.json());
 
 // setting up authenticationn
 app.use(basicAuth);
