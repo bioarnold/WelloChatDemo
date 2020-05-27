@@ -46,6 +46,9 @@ describe('/Users', () => {
             const res = await postAsAdmin('/users', testUser);
             res.should.have.status(200);
             res.body.should.deep.equal(testUser);
+
+            const usersRes = await getAsAdmin('/users');
+            usersRes.body.should.deep.include({ userName: testUser.userName, profileImage: testUser.profileImage, email: testUser.email });
         });
 
         it('should reject with HTTP 403 if caller is not admin', async () => {
