@@ -71,6 +71,8 @@ async function getUsers(req, res, next) {
  *             "$ref": '#/definitions/User'
  *       403:
  *         description: FORBIDDEN if the user is not an admin
+ *       401:
+ *         description: UNAUTHORIZED if the user is not authenticated
  */
 async function addUser(req, res, next) {
     if (!req.user.isAdmin) {
@@ -124,6 +126,40 @@ async function getUser(req, res, next) {
         .catch((err) => next(err));
 }
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     description: Deletes user by id
+ *     parameters:
+ *     - in: path
+ *       name: id
+ *       type: integer
+ *       required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: In case the user is deleted
+ *       403:
+ *         description: FORBIDDEN if the user is not an admin
+ *       401:
+ *         description: UNAUTHORIZED if the user is not authenticated
+ */
+async function removeUser(req, res, next) {
+    if (!req.user.isAdmin) {
+        res.status(403);
+        return res.json({ error: 'Forbidden' });
+    }
+
+    userService
+        .removeUser(req.params.id)
+        .then(() => res.json({}))
+        .catch((err) => next(err));
+}
+
 function validateCreateRequest(req) {
     if (!req || !req.body) {
         return false;
@@ -138,4 +174,4 @@ function validateCreateRequest(req) {
     return true;
 }
 
-module.exports = { getUsers, addUser, getUser };
+module.exports = { getUsers, addUser, getUser, removeUser };

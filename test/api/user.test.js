@@ -92,9 +92,39 @@ describe('User endpoints', () => {
                 res.body.should.deep.equal({ error: 'User not found' });
             });
         });
+
+        describe('DELETE', () => {
+            it('should remove specified user', async () => {
+                const res = await deleteAsAdmin('/users/2');
+                res.should.have.status(200);
+
+                const userRes = await getAsAdmin('/users/2');
+                userRes.should.have.status(404);
+            });
+
+            it('should return HTTP 403 if caller is not admin', async () => {
+                const res = await deleteAsUser('/users/2');
+                res.should.have.status(403);
+                res.body.should.deep.equal({ error: 'Forbidden' });
+
+                // user should still exist
+                const userRes = await getAsAdmin('/users/2');
+                userRes.should.have.status(200);
+            });
+
+            it('should return HTTP 401 if caller is not authenticated', async () => {
+                const res = await deleteWithoutAuth('/users/1');
+                res.should.have.status(401);
+
+                // user should still exist
+                const userRes = await getAsAdmin('/users/2');
+                userRes.should.have.status(200);
+            });
+        });
     });
 });
 
+// GET
 function getAsAdmin(url) {
     return chai.request(server).get(url).auth('admin', 'admin');
 }
@@ -103,6 +133,7 @@ function getWithoutAuth(url) {
     return chai.request(server).get(url);
 }
 
+// POST
 function postAsAdmin(url, body) {
     return chai.request(server).post(url).auth('admin', 'admin').send(body);
 }
@@ -113,4 +144,17 @@ function postAsUser(url, body) {
 
 function postWithoutAuth(url, body) {
     return chai.request(server).post(url).send(body);
+}
+
+// DELETE
+function deleteAsAdmin(url) {
+    return chai.request(server).delete(url).auth('admin', 'admin');
+}
+
+function deleteAsUser(url) {
+    return chai.request(server).delete(url).auth('user1', 'user1');
+}
+
+function deleteWithoutAuth(url) {
+    return chai.request(server).delete(url);
 }

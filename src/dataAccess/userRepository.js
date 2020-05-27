@@ -35,8 +35,14 @@ async function addUser(user) {
     return userToInsert;
 }
 
-async function getUser(userId) {
-    return db.asyncFindOne({ id: +userId });
+async function getUser(id) {
+    return db.asyncFindOne({ id: +id });
 }
 
-module.exports = { getUsers, getForAuth, addUser, initializeTestData, getUser };
+async function removeUser(id) {
+    // TODO consider user presence checking before removal
+
+    return db.asyncRemove({ id: +id });
+}
+
+module.exports = { getUsers, getForAuth, addUser, initializeTestData, getUser, removeUser };

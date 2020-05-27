@@ -22,9 +22,14 @@ async function getUser(id, showProtected) {
     return transformer.transform(await userRepository.getUser(id), showProtected);
 }
 
+function removeUser(id) {
+    return userRepository.removeUser(id);
+}
+
 module.exports = {
     authenticate,
     getAll,
     addUser,
     getUser,
+    removeUser,
 };
