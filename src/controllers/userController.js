@@ -90,8 +90,6 @@ async function addUser(req, res, next) {
 }
 
 function validateCreateRequest(req) {
-    console.log(req);
-
     if (!req || !req.body) {
         return false;
     }

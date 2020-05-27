@@ -2,12 +2,14 @@
 const { AsyncNedb } = require('nedb-async');
 const db = new AsyncNedb();
 
-const insertTestData = async () => {
+async function initializeTestData() {
+    await db.asyncRemove({}, { multi: true });
+
     await db.asyncInsert({ userName: 'admin', password: 'admin', email: 'admin@wellochat.com', isAdmin: true, profileImage: 'http://profile.pic/1' });
     await db.asyncInsert({ userName: 'user1', password: 'user1', email: 'user1@wellochat.com', isAdmin: false, profileImage: 'http://profile.pic/2' });
-};
+}
 
-insertTestData();
+initializeTestData();
 
 function getUsers() {
     return db.asyncFind({}, [['sort', { userName: 1 }]]);
@@ -26,4 +28,4 @@ async function addUser(user) {
     return user;
 }
 
-module.exports = { getUsers, getForAuth, addUser };
+module.exports = { getUsers, getForAuth, addUser, initializeTestData };
