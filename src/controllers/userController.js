@@ -9,8 +9,20 @@ const userService = require('./../services/userService');
  *         type: string
  *       email:
  *         type: string
- *       profileImag:
- *         type: string;
+ *       profileImage:
+ *         type: string
+ *   CreateUserRequest:
+ *     properties:
+ *       userName:
+ *         type: string
+ *       password:
+ *         type: string
+ *       email:
+ *         type: string
+ *       profileImage:
+ *         type: string
+ *       isAdmin:
+ *         type: boolean
  */
 
 /**
@@ -20,6 +32,7 @@ const userService = require('./../services/userService');
  *     tags:
  *       - Users
  *     description: Returns all users
+ *
  *     produces:
  *       - application/json
  *     responses:
@@ -44,6 +57,11 @@ async function getUsers(req, res, next) {
  *     tags:
  *       - Users
  *     description: Creates user
+ *     parameters:
+ *     - in: body
+ *       name: body
+ *       schema:
+ *         "$ref": "#/definitions/CreateUserRequest"
  *     produces:
  *       - application/json
  *     responses:
