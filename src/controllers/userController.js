@@ -97,7 +97,7 @@ function validateCreateRequest(req) {
     const expectedProps = ['userName', 'password', 'email', 'isAdmin', 'profileImage'];
 
     for (const prop of expectedProps) {
-        if (!prop in req.body) return false;
+        if (!(prop in req.body)) return false;
     }
 
     return true;
