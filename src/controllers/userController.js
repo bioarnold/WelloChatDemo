@@ -89,6 +89,41 @@ async function addUser(req, res, next) {
         .catch((err) => next(err));
 }
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Gets user by id
+ *     parameters:
+ *     - in: path
+ *       name: id
+ *       type: integer
+ *       required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: The fetched user object
+ *         schema:
+ *             "$ref": '#/definitions/User'
+ *       404:
+ *         description: In case the user is not found
+ */
+async function getUser(req, res, next) {
+    userService
+        .getUser(req.params.id, !!req.user)
+        .then((user) => {
+            if (user) res.json(user);
+            else {
+                res.status(404);
+                res.json({ error: 'User not found' });
+            }
+        })
+        .catch((err) => next(err));
+}
+
 function validateCreateRequest(req) {
     if (!req || !req.body) {
         return false;
@@ -103,4 +138,4 @@ function validateCreateRequest(req) {
     return true;
 }
 
-module.exports = { getUsers, addUser };
+module.exports = { getUsers, addUser, getUser };

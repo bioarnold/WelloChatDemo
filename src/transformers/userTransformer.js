@@ -6,6 +6,7 @@ function transform(user, showProtected) {
     }
 
     const result = {
+        id: user.id,
         userName: user.userName,
         profileImage: user.profileImage,
     };
