@@ -41,7 +41,10 @@ async function getUser(id) {
 }
 
 async function removeUser(id) {
-    // TODO consider user presence checking before removal
+    const existingUser = await this.getUser(id);
+    if (!existingUser) {
+        throw new NotFoundError('User not found');
+    }
 
     return db.asyncRemove({ id: +id });
 }

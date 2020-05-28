@@ -12,4 +12,10 @@ class NotFoundError extends DomainError {
     }
 }
 
-module.exports = { NotFoundError, DomainError };
+class ForbiddenError extends DomainError {
+    constructor(message) {
+        super(message, 403);
+    }
+}
+
+module.exports = { NotFoundError, DomainError, ForbiddenError };

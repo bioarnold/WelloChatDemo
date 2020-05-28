@@ -57,7 +57,7 @@ describe('User endpoints', () => {
             it('should return HTTP 403 if caller is not admin', async () => {
                 const res = await postAsUser('/users', testUser);
                 res.should.have.status(403);
-                res.body.should.deep.equal({ error: 'Forbidden' });
+                res.body.should.deep.equal({ code: 403, error: 'Function available to admins only' });
             });
 
             it('should return HTTP 401 if caller is not authenticated', async () => {
@@ -105,7 +105,7 @@ describe('User endpoints', () => {
             it('should return HTTP 403 if caller is not admin', async () => {
                 const res = await deleteAsUser('/users/2');
                 res.should.have.status(403);
-                res.body.should.deep.equal({ error: 'Forbidden' });
+                res.body.should.deep.equal({ code: 403, error: 'Function available to admins only' });
 
                 // user should still exist
                 const userRes = await getAsAdmin('/users/2');
@@ -119,6 +119,12 @@ describe('User endpoints', () => {
                 // user should still exist
                 const userRes = await getAsAdmin('/users/2');
                 userRes.should.have.status(200);
+            });
+
+            it('should return HTTP 404 if user does not exist', async () => {
+                const res = await deleteAsAdmin('/users/3');
+                res.should.have.status(404);
+                res.body.should.deep.equal({ code: 404, error: 'User not found' });
             });
         });
 
@@ -139,7 +145,7 @@ describe('User endpoints', () => {
 
                 const res = await putAsUser('/users/2', updateUserReq);
                 res.should.have.status(403);
-                res.body.should.deep.equal({ error: 'Forbidden' });
+                res.body.should.deep.equal({ code: 403, error: 'Function available to admins only' });
 
                 const userAfterRes = await getAsAdmin('/users/2');
                 userAfterRes.should.have.status(200);
@@ -155,6 +161,12 @@ describe('User endpoints', () => {
                 const userAfterRes = await getAsAdmin('/users/2');
                 userAfterRes.should.have.status(200);
                 userAfterRes.body.should.deep.equal(userBeforeRes.body);
+            });
+
+            it('should return HTTP 404 if user does not exist', async () => {
+                const res = await putAsAdmin('/users/3', updateUserReq);
+                res.should.have.status(404);
+                res.body.should.deep.equal({ code: 404, error: 'User not found' });
             });
         });
     });

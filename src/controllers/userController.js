@@ -83,11 +83,6 @@ async function getUsers(req, res, next) {
  *         description: UNAUTHORIZED if the caller is not authenticated
  */
 async function addUser(req, res, next) {
-    if (!req.user.isAdmin) {
-        res.status(403);
-        return res.json({ error: 'Forbidden' });
-    }
-
     if (!validateCreateRequest(req)) {
         res.status(400);
         return res.json({ error: 'Invalid request' });
@@ -157,11 +152,6 @@ async function getUser(req, res, next) {
  *         description: UNAUTHORIZED if the caller is not authenticated
  */
 async function removeUser(req, res, next) {
-    if (!req.user.isAdmin) {
-        res.status(403);
-        return res.json({ error: 'Forbidden' });
-    }
-
     userService
         .removeUser(req.params.id)
         .then(() => res.json({}))
@@ -195,11 +185,6 @@ async function removeUser(req, res, next) {
  *         description: UNAUTHORIZED if the caller is not authenticated
  */
 async function updateUser(req, res, next) {
-    if (!req.user.isAdmin) {
-        res.status(403);
-        return res.json({ error: 'Forbidden' });
-    }
-
     userService
         .updateUser(req.params.id, req.body)
         .then(() => res.json({}))
