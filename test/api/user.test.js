@@ -23,8 +23,8 @@ describe('User endpoints', () => {
                 res.should.have.status(200);
 
                 res.body.should.deep.equal([
-                    { id: 1, userName: 'admin', email: 'admin@wellochat.com', profileImage: 'http://profile.pic/1' },
-                    { id: 2, userName: 'user1', email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' },
+                    { id: 1, userName: 'admin', isAdmin: true, email: 'admin@wellochat.com', profileImage: 'http://profile.pic/1' },
+                    { id: 2, userName: 'user1', isAdmin: false, email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' },
                 ]);
             });
 
@@ -47,7 +47,7 @@ describe('User endpoints', () => {
                 const res = await postAsAdmin('/users', testUser);
                 res.should.have.status(200);
 
-                const { isAdmin, password, ...testUserWithoutPassword } = testUser;
+                const { password, ...testUserWithoutPassword } = testUser;
                 res.body.should.deep.equal({ id: 3, ...testUserWithoutPassword });
 
                 const usersRes = await getAsAdmin('/users');
@@ -74,7 +74,7 @@ describe('User endpoints', () => {
 
                 res.should.have.status(200);
 
-                res.body.should.deep.equal({ id: 1, userName: 'admin', email: 'admin@wellochat.com', profileImage: 'http://profile.pic/1' });
+                res.body.should.deep.equal({ id: 1, userName: 'admin', isAdmin: true, email: 'admin@wellochat.com', profileImage: 'http://profile.pic/1' });
             });
 
             it('should return specified user for unauthenticated request', async () => {
@@ -121,6 +121,42 @@ describe('User endpoints', () => {
                 userRes.should.have.status(200);
             });
         });
+
+        describe('PUT', () => {
+            const updateUserReq = { email: 'newemail@wellochat.com', isAdmin: true, profileImage: 'http://newimage.test' };
+
+            it('should update specified user', async () => {
+                const res = await putAsAdmin('/users/2', updateUserReq);
+                res.should.have.status(200);
+
+                const userRes = await getAsAdmin('/users/2');
+                userRes.should.have.status(200);
+                userRes.body.should.deep.equal({ ...userRes.body, ...updateUserReq });
+            });
+
+            it('should return HTTP 403 if caller is not admin', async () => {
+                const userBeforeRes = await getAsAdmin('/users/2');
+
+                const res = await putAsUser('/users/2', updateUserReq);
+                res.should.have.status(403);
+                res.body.should.deep.equal({ error: 'Forbidden' });
+
+                const userAfterRes = await getAsAdmin('/users/2');
+                userAfterRes.should.have.status(200);
+                userAfterRes.body.should.deep.equal(userBeforeRes.body);
+            });
+
+            it('should return HTTP 401 if caller is not authenticated', async () => {
+                const userBeforeRes = await getAsAdmin('/users/2');
+
+                const res = await putWithoutAuth('/users/2', updateUserReq);
+                res.should.have.status(401);
+
+                const userAfterRes = await getAsAdmin('/users/2');
+                userAfterRes.should.have.status(200);
+                userAfterRes.body.should.deep.equal(userBeforeRes.body);
+            });
+        });
     });
 });
 
@@ -157,4 +193,17 @@ function deleteAsUser(url) {
 
 function deleteWithoutAuth(url) {
     return chai.request(server).delete(url);
+}
+
+// PUT
+function putAsAdmin(url, body) {
+    return chai.request(server).put(url).auth('admin', 'admin').send(body);
+}
+
+function putAsUser(url, body) {
+    return chai.request(server).put(url).auth('user1', 'user1').send(body);
+}
+
+function putWithoutAuth(url, body) {
+    return chai.request(server).put(url).send(body);
 }

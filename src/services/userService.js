@@ -26,10 +26,15 @@ function removeUser(id) {
     return userRepository.removeUser(id);
 }
 
+function updateUser(id, user) {
+    return userRepository.updateUser(id, user);
+}
+
 module.exports = {
     authenticate,
     getAll,
     addUser,
     getUser,
     removeUser,
+    updateUser,
 };

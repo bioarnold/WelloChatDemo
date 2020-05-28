@@ -1,6 +1,7 @@
 // using in-memory DB for the sake of simplicity
 const { AsyncNedb } = require('nedb-async');
 const db = new AsyncNedb();
+const { NotFoundError } = require('../exceptions/customErrors');
 
 async function initializeTestData() {
     await db.asyncRemove({}, { multi: true });
@@ -45,4 +46,16 @@ async function removeUser(id) {
     return db.asyncRemove({ id: +id });
 }
 
-module.exports = { getUsers, getForAuth, addUser, initializeTestData, getUser, removeUser };
+async function updateUser(userId, user) {
+    // id, userName is not updateable
+    const { id, userName, ...safeUser } = user;
+
+    const existingUser = await this.getUser(userId);
+    if (!existingUser) {
+        throw new NotFoundError('User not found');
+    }
+
+    return db.asyncUpdate({ id: +userId }, { ...existingUser, ...safeUser });
+}
+
+module.exports = { getUsers, getForAuth, addUser, initializeTestData, getUser, removeUser, updateUser };

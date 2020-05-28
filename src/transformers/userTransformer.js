@@ -11,7 +11,7 @@ function transform(user, showProtected) {
         profileImage: user.profileImage,
     };
 
-    return { ...result, ...(showProtected ? { email: user.email } : {}) };
+    return { ...result, ...(showProtected ? { email: user.email, isAdmin: user.isAdmin } : {}) };
 }
 
 function transformList(users, showProtected) {

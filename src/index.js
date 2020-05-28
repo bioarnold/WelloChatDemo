@@ -5,6 +5,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicAuth = require('./authentication/basicAuth');
 const bodyParser = require('body-parser');
+const { DomainError } = require('./exceptions/customErrors');
 
 const port = 8000;
 
@@ -60,13 +61,22 @@ app.use(
 
 app.use('/', routes);
 
+// error handling
+app.use(function (err, req, res, next) {
+    if (err instanceof DomainError) {
+        res.status(err.code).json({ code: err.code, error: err.message });
+    } else {
+        res.status(500).json({ code: 500, error: 'Something really bad happened' });
+    }
+});
+
 const server = app.listen(port, () => {
     console.log('Server listening on port 8000!');
 });
 
-const stop = () => {
+function stop() {
     server.close();
-};
+}
 
 module.exports = app;
 module.exports.stop = stop;

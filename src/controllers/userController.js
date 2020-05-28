@@ -23,6 +23,14 @@ const userService = require('./../services/userService');
  *         type: string
  *       isAdmin:
  *         type: boolean
+ *   UpdateUserRequest:
+ *     properties:
+ *       email:
+ *         type: string
+ *       profileImage:
+ *         type: string
+ *       isAdmin:
+ *         type: boolean
  */
 
 /**
@@ -70,9 +78,9 @@ async function getUsers(req, res, next) {
  *         schema:
  *             "$ref": '#/definitions/User'
  *       403:
- *         description: FORBIDDEN if the user is not an admin
+ *         description: FORBIDDEN if the caller is not an admin
  *       401:
- *         description: UNAUTHORIZED if the user is not authenticated
+ *         description: UNAUTHORIZED if the caller is not authenticated
  */
 async function addUser(req, res, next) {
     if (!req.user.isAdmin) {
@@ -144,9 +152,9 @@ async function getUser(req, res, next) {
  *       200:
  *         description: In case the user is deleted
  *       403:
- *         description: FORBIDDEN if the user is not an admin
+ *         description: FORBIDDEN if the caller is not an admin
  *       401:
- *         description: UNAUTHORIZED if the user is not authenticated
+ *         description: UNAUTHORIZED if the caller is not authenticated
  */
 async function removeUser(req, res, next) {
     if (!req.user.isAdmin) {
@@ -156,6 +164,44 @@ async function removeUser(req, res, next) {
 
     userService
         .removeUser(req.params.id)
+        .then(() => res.json({}))
+        .catch((err) => next(err));
+}
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     tags:
+ *       - Users
+ *     description: Updates user by id
+ *     parameters:
+ *     - in: path
+ *       name: id
+ *       type: integer
+ *       required: true
+ *     - in: body
+ *       name: body
+ *       schema:
+ *         "$ref": "#/definitions/UpdateUserRequest"
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: In case the user is updated
+ *       403:
+ *         description: FORBIDDEN if the caller is not an admin
+ *       401:
+ *         description: UNAUTHORIZED if the caller is not authenticated
+ */
+async function updateUser(req, res, next) {
+    if (!req.user.isAdmin) {
+        res.status(403);
+        return res.json({ error: 'Forbidden' });
+    }
+
+    userService
+        .updateUser(req.params.id, req.body)
         .then(() => res.json({}))
         .catch((err) => next(err));
 }
@@ -174,4 +220,4 @@ function validateCreateRequest(req) {
     return true;
 }
 
-module.exports = { getUsers, addUser, getUser, removeUser };
+module.exports = { getUsers, addUser, getUser, removeUser, updateUser };
