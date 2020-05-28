@@ -150,6 +150,8 @@ async function getUser(req, res, next) {
  *         description: FORBIDDEN if the caller is not an admin
  *       401:
  *         description: UNAUTHORIZED if the caller is not authenticated
+ *       404:
+ *         description: NOT_FOUND if the user does not exist
  */
 async function removeUser(req, res, next) {
     userService
