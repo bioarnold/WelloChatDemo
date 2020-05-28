@@ -64,6 +64,18 @@ describe('User endpoints', () => {
                 const res = await postWithoutAuth('/users', testUser);
                 res.should.have.status(401);
             });
+
+            it('should return HTTP 401 if invalid credentials were provided', async () => {
+                const res = await postWithInvalidCredentials('/users', testUser);
+                res.should.have.status(401);
+                res.body.should.deep.equal({ code: 401, error: 'Invalid Authentication Credentials' });
+            });
+
+            it('should return HTTP 400 if request body is invalid', async () => {
+                const res = await postAsAdmin('/users', { blah: 'blah' });
+                res.should.have.status(400);
+                res.body.should.deep.equal({ code: 400, error: 'Invalid request' });
+            });
         });
     });
 
@@ -89,7 +101,7 @@ describe('User endpoints', () => {
                 const res = await getWithoutAuth('/users/3');
 
                 res.should.have.status(404);
-                res.body.should.deep.equal({ error: 'User not found' });
+                res.body.should.deep.equal({ code: 404, error: 'User not found' });
             });
         });
 
@@ -125,6 +137,12 @@ describe('User endpoints', () => {
                 const res = await deleteAsAdmin('/users/3');
                 res.should.have.status(404);
                 res.body.should.deep.equal({ code: 404, error: 'User not found' });
+            });
+
+            it('should return HTTP 401 if invalid credentials were provided', async () => {
+                const res = await deleteWithInvalidCredentials('/users/3');
+                res.should.have.status(401);
+                res.body.should.deep.equal({ code: 401, error: 'Invalid Authentication Credentials' });
             });
         });
 
@@ -167,6 +185,12 @@ describe('User endpoints', () => {
                 const res = await putAsAdmin('/users/3', updateUserReq);
                 res.should.have.status(404);
                 res.body.should.deep.equal({ code: 404, error: 'User not found' });
+            });
+
+            it('should return HTTP 401 if invalid credentials were provided', async () => {
+                const res = await putWithInvalidCredentials('/users/3', updateUserReq);
+                res.should.have.status(401);
+                res.body.should.deep.equal({ code: 401, error: 'Invalid Authentication Credentials' });
             });
         });
     });
@@ -249,6 +273,10 @@ function postWithoutAuth(url, body) {
     return chai.request(server).post(url).send(body);
 }
 
+function postWithInvalidCredentials(url, body) {
+    return chai.request(server).post(url).auth('invalid', 'invalid').send(body);
+}
+
 // DELETE
 function deleteAsAdmin(url) {
     return chai.request(server).delete(url).auth('admin', 'admin');
@@ -262,6 +290,10 @@ function deleteWithoutAuth(url) {
     return chai.request(server).delete(url);
 }
 
+function deleteWithInvalidCredentials(url) {
+    return chai.request(server).delete(url).auth('invalid', 'invalid');
+}
+
 // PUT
 function putAsAdmin(url, body) {
     return chai.request(server).put(url).auth('admin', 'admin').send(body);
@@ -273,4 +305,8 @@ function putAsUser(url, body) {
 
 function putWithoutAuth(url, body) {
     return chai.request(server).put(url).send(body);
+}
+
+function putWithInvalidCredentials(url, body) {
+    return chai.request(server).put(url).auth('invalid', 'invalid').send(body);
 }

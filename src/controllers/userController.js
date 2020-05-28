@@ -85,7 +85,7 @@ async function getUsers(req, res, next) {
 async function addUser(req, res, next) {
     if (!validateCreateRequest(req)) {
         res.status(400);
-        return res.json({ error: 'Invalid request' });
+        return res.json({ code: 400, error: 'Invalid request' });
     }
 
     userService
@@ -119,13 +119,7 @@ async function addUser(req, res, next) {
 async function getUser(req, res, next) {
     userService
         .getUser(req.params.id)
-        .then((user) => {
-            if (user) res.json(user);
-            else {
-                res.status(404);
-                res.json({ error: 'User not found' });
-            }
-        })
+        .then((user) => res.json(user))
         .catch((err) => next(err));
 }
 
@@ -235,10 +229,6 @@ async function findUser(req, res, next) {
 }
 
 function validateCreateRequest(req) {
-    if (!req || !req.body) {
-        return false;
-    }
-
     const expectedProps = ['userName', 'password', 'email', 'isAdmin', 'profileImage'];
 
     for (const prop of expectedProps) {

@@ -37,14 +37,18 @@ var options = {
 // initialize swagger-jsdoc
 var swaggerSpec = swaggerJSDoc(options);
 
-app.get('/swagger.json', function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerSpec);
-});
+app.get(
+    '/swagger.json',
+    /* istanbul ignore next */ function (req, res) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(swaggerSpec);
+    }
+);
 
 let generatedHtml;
 app.use(
     '/swagger',
+    /* istanbul ignore next */
     (req, res, next) => {
         const opts = {
             swaggerOptions: {
@@ -56,20 +60,23 @@ app.use(
         next();
     },
     swaggerUi.serve,
+    /* istanbul ignore next */
     (req, res) => res.send(generatedHtml)
 );
 
 app.use('/', routes);
 
 // error handling
-app.use(function (err, req, res, next) {
-    if (err instanceof DomainError) {
-        res.status(err.code).json({ code: err.code, error: err.message });
-    } else {
-        console.error(err);
-        res.status(500).json({ code: 500, error: 'Something really bad happened' });
+app.use(
+    /* istanbul ignore next */ function (err, req, res, next) {
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ code: err.code, error: err.message });
+        } else {
+            console.error(err);
+            res.status(500).json({ code: 500, error: 'Something really bad happened' });
+        }
     }
-});
+);
 
 const server = app.listen(port, () => {
     console.log('Server listening on port 8000!');

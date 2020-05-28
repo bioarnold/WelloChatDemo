@@ -17,8 +17,6 @@ async function addUser(user) {
         throw new ForbiddenError('Function available to admins only');
     }
 
-    if (!user) return;
-
     return transformer.transform(await userRepository.addUser(user), true);
 }
 

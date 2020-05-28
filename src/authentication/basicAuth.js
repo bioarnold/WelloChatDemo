@@ -3,6 +3,7 @@ const routes = require('./../routes');
 
 async function basicAuth(req, res, next) {
     // make swagger path public
+    /* istanbul ignore next */
     if (req.path.startsWith('/swagger')) {
         return next();
     }
@@ -29,7 +30,7 @@ async function basicAuth(req, res, next) {
         user = await userService.authenticate({ userName, password });
     }
     if (!skipAuthentication && !user) {
-        return res.status(401).json({ message: 'Invalid Authentication Credentials' });
+        return res.status(401).json({ code: 401, error: 'Invalid Authentication Credentials' });
     }
 
     // attach user to request object

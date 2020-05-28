@@ -26,10 +26,6 @@ function getForAuth(userName, password) {
 }
 
 async function addUser(user) {
-    if (!user) {
-        return;
-    }
-
     const userToInsert = { id: nextId++, ...user };
 
     await db.asyncInsert(userToInsert);
@@ -37,7 +33,13 @@ async function addUser(user) {
 }
 
 async function getUser(id) {
-    return db.asyncFindOne({ id: +id });
+    const user = await db.asyncFindOne({ id: +id });
+
+    if (!user) {
+        throw new NotFoundError('User not found');
+    }
+
+    return user;
 }
 
 async function removeUser(id) {
@@ -62,7 +64,7 @@ async function updateUser(userId, user) {
 }
 
 async function findUser(userQuery) {
-    let query = [];
+    const query = [];
 
     if (userQuery.userName) {
         query.push({ userName: new RegExp(userQuery.userName) });
