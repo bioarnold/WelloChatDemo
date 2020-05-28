@@ -66,6 +66,7 @@ app.use(function (err, req, res, next) {
     if (err instanceof DomainError) {
         res.status(err.code).json({ code: err.code, error: err.message });
     } else {
+        console.error(err);
         res.status(500).json({ code: 500, error: 'Something really bad happened' });
     }
 });

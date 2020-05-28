@@ -53,7 +53,7 @@ const userService = require('./../services/userService');
  */
 async function getUsers(req, res, next) {
     userService
-        .getAll(!!req.user)
+        .getAll()
         .then((users) => res.json(users))
         .catch((err) => next(err));
 }
@@ -118,7 +118,7 @@ async function addUser(req, res, next) {
  */
 async function getUser(req, res, next) {
     userService
-        .getUser(req.params.id, !!req.user)
+        .getUser(req.params.id)
         .then((user) => {
             if (user) res.json(user);
             else {
@@ -193,6 +193,47 @@ async function updateUser(req, res, next) {
         .catch((err) => next(err));
 }
 
+/**
+ * @swagger
+ * /users/find:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Finds users
+ *     parameters:
+ *     - in: query
+ *       name: userName
+ *       type: string
+ *       required: false
+ *     - in: query
+ *       name: isAdmin
+ *       type: bool
+ *       required: false
+ *     - in: query
+ *       name: email
+ *       type: tring
+ *       required: false
+ *     - in: query
+ *       name: profileImage
+ *       type: string
+ *       required: false
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: An array of matching users
+ *         schema:
+ *           type: array
+ *           items:
+ *             "$ref": '#/definitions/User'
+ */
+async function findUser(req, res, next) {
+    userService
+        .findUser(req.query)
+        .then((users) => res.json(users))
+        .catch((err) => next(err));
+}
+
 function validateCreateRequest(req) {
     if (!req || !req.body) {
         return false;
@@ -207,4 +248,4 @@ function validateCreateRequest(req) {
     return true;
 }
 
-module.exports = { getUsers, addUser, getUser, removeUser, updateUser };
+module.exports = { getUsers, addUser, getUser, removeUser, updateUser, findUser };

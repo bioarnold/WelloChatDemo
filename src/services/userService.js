@@ -5,14 +5,11 @@ const { ForbiddenError } = require('./../exceptions/customErrors');
 let currentUser;
 
 async function authenticate({ userName, password }) {
-    const user = await userRepository.getForAuth(userName, password);
-    if (user) {
-        return user;
-    }
+    return userRepository.getForAuth(userName, password);
 }
 
-async function getAll(showProtected) {
-    return transformer.transformList(await userRepository.getUsers(), showProtected);
+async function getAll() {
+    return transformer.transformList(await userRepository.getUsers(), !!currentUser);
 }
 
 async function addUser(user) {
@@ -25,8 +22,8 @@ async function addUser(user) {
     return transformer.transform(await userRepository.addUser(user), true);
 }
 
-async function getUser(id, showProtected) {
-    return transformer.transform(await userRepository.getUser(id), showProtected);
+async function getUser(id) {
+    return transformer.transform(await userRepository.getUser(id), !!currentUser);
 }
 
 async function removeUser(id) {
@@ -45,6 +42,10 @@ async function updateUser(id, user) {
     return userRepository.updateUser(id, user);
 }
 
+async function findUser(userQuery) {
+    return transformer.transformList(await userRepository.findUser(userQuery), !!currentUser);
+}
+
 function setCurrentUser(user) {
     currentUser = user;
 }
@@ -57,4 +58,5 @@ module.exports = {
     removeUser,
     updateUser,
     setCurrentUser,
+    findUser,
 };

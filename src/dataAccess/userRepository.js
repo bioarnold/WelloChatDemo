@@ -61,4 +61,23 @@ async function updateUser(userId, user) {
     return db.asyncUpdate({ id: +userId }, { ...existingUser, ...safeUser });
 }
 
-module.exports = { getUsers, getForAuth, addUser, initializeTestData, getUser, removeUser, updateUser };
+async function findUser(userQuery) {
+    let query = [];
+
+    if (userQuery.userName) {
+        query.push({ userName: new RegExp(userQuery.userName) });
+    }
+    if (userQuery.email) {
+        query.push({ email: new RegExp(userQuery.email) });
+    }
+    if ('isAdmin' in userQuery) {
+        query.push({ isAdmin: userQuery.isAdmin === 'true' });
+    }
+    if (userQuery.profileImage) {
+        query.push({ profileImage: new RegExp(userQuery.profileImage) });
+    }
+
+    return db.asyncFind({ $and: query }, [['sort', { userName: 1 }]]);
+}
+
+module.exports = { getUsers, getForAuth, addUser, initializeTestData, getUser, removeUser, updateUser, findUser };

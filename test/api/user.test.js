@@ -15,7 +15,7 @@ describe('User endpoints', () => {
         server.stop();
     });
 
-    describe('/Users', () => {
+    describe('/users', () => {
         describe('GET', () => {
             it('should return all users', async () => {
                 const res = await getAsAdmin('/users');
@@ -67,7 +67,7 @@ describe('User endpoints', () => {
         });
     });
 
-    describe('/Users:id', () => {
+    describe('/users:id', () => {
         describe('GET', () => {
             it('should return specified user', async () => {
                 const res = await getAsAdmin('/users/1');
@@ -167,6 +167,61 @@ describe('User endpoints', () => {
                 const res = await putAsAdmin('/users/3', updateUserReq);
                 res.should.have.status(404);
                 res.body.should.deep.equal({ code: 404, error: 'User not found' });
+            });
+        });
+    });
+
+    describe('/users/find', () => {
+        describe('GET', () => {
+            it('should return all users if no criteria is specified', async () => {
+                const res = await getAsAdmin('/users/find');
+
+                res.should.have.status(200);
+
+                res.body.should.deep.equal([
+                    { id: 1, userName: 'admin', isAdmin: true, email: 'admin@wellochat.com', profileImage: 'http://profile.pic/1' },
+                    { id: 2, userName: 'user1', isAdmin: false, email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' },
+                ]);
+            });
+
+            it('should search users by userName', async () => {
+                const res = await getAsAdmin('/users/find?userName=adm');
+
+                res.should.have.status(200);
+
+                res.body.should.deep.equal([{ id: 1, userName: 'admin', isAdmin: true, email: 'admin@wellochat.com', profileImage: 'http://profile.pic/1' }]);
+            });
+
+            it('should search users by email', async () => {
+                const res = await getAsAdmin('/users/find?email=user1@we');
+
+                res.should.have.status(200);
+
+                res.body.should.deep.equal([{ id: 2, userName: 'user1', isAdmin: false, email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' }]);
+            });
+
+            it('should search users by isAdmin', async () => {
+                const res = await getAsAdmin('/users/find?isAdmin=false');
+
+                res.should.have.status(200);
+
+                res.body.should.deep.equal([{ id: 2, userName: 'user1', isAdmin: false, email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' }]);
+            });
+
+            it('should search users by profileImage', async () => {
+                const res = await getAsAdmin('/users/find?profileImage=.pic/2');
+
+                res.should.have.status(200);
+
+                res.body.should.deep.equal([{ id: 2, userName: 'user1', isAdmin: false, email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' }]);
+            });
+
+            it('should search users by multiple criteria', async () => {
+                const res = await getAsAdmin('/users/find?profileImage=.pic/2&email=user1&isAdmin=false');
+
+                res.should.have.status(200);
+
+                res.body.should.deep.equal([{ id: 2, userName: 'user1', isAdmin: false, email: 'user1@wellochat.com', profileImage: 'http://profile.pic/2' }]);
             });
         });
     });
